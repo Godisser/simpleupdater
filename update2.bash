@@ -1,0 +1,98 @@
+#!/bin/bash
+# Universal Linux Updater Script
+# Made by @Godisser
+
+set -e
+
+# Colors for output
+GREEN="\033[0;32m"
+YELLOW="\033[1;33m"
+RED="\033[0;31m"
+NC="\033[0m" # No Color
+
+# Log file
+LOG_FILE="$HOME/update_log.txt"
+
+# Header
+echo -e "${GREEN}=============================================${NC}"
+echo -e "${GREEN}Universal Linux Updater Script${NC}"
+echo -e "${GREEN}Made by @Godisser${NC}"
+echo -e "${GREEN}=============================================${NC}"
+echo -e "Logs will be saved to $LOG_FILE"
+echo
+
+# Function to check if a command exists
+command_exists() {
+    command -v "$1" >/dev/null 2>&1
+}
+
+# Function to update Ubuntu/Debian
+update_ubuntu() {
+    echo -e "${YELLOW}Updating APT packages...${NC}"
+    {
+        sudo apt update -y
+        sudo apt upgrade -y
+        sudo apt autoremove -y
+    } | tee -a "$LOG_FILE"
+}
+
+# Function to update Arch/Manjaro
+update_arch() {
+    echo -e "${YELLOW}Updating Pacman packages...${NC}"
+    {
+        sudo pacman -Syu --noconfirm
+    } | tee -a "$LOG_FILE"
+}
+
+# Detect distro automatically or ask user
+if [[ -f /etc/os-release ]]; then
+    source /etc/os-release
+    DISTRO="$ID"
+else
+    read -p "Cannot detect distro. Enter your distro (ubuntu/arch/debian/etc): " DISTRO
+fi
+
+echo -e "${GREEN}Detected distro: $DISTRO${NC}"
+
+# Update based on distro
+case "$DISTRO" in
+    ubuntu|debian)
+        update_ubuntu
+        ;;
+    arch|manjaro)
+        update_arch
+        ;;
+    *)
+        echo -e "${RED}Distro not recognized. Please edit the script to add your distro commands.${NC}"
+        exit 1
+        ;;
+esac
+
+# Update Flatpak (optional)
+if command_exists flatpak; then
+    read -p "Do you want to update Flatpak apps? [y/N]: " update_flatpak
+    if [[ "$update_flatpak" =~ ^[Yy]$ ]]; then
+        echo -e "${YELLOW}Updating Flatpak apps...${NC}"
+        flatpak update -y | tee -a "$LOG_FILE"
+    else
+        echo "Skipped Flatpak updates."
+    fi
+fi
+
+# Update Snap packages (optional)
+if command_exists snap; then
+    read -p "Do you want to refresh Snap packages? [y/N]: " update_snap
+    if [[ "$update_snap" =~ ^[Yy]$ ]]; then
+        echo -e "${YELLOW}Refreshing Snap packages...${NC}"
+        sudo snap refresh | tee -a "$LOG_FILE"
+    else
+        echo "Skipped Snap refresh."
+    fi
+fi
+
+# Completion message
+echo -e "${GREEN}================= Update Completed =================${NC}"
+echo -e "Logs saved to $LOG_FILE"
+echo -e "${GREEN}===================================================${NC}"
+echo "GitHub: https://github.com/Godisser/simpleupdater"
+echo -e "${GREEN}===================================================${NC}"
