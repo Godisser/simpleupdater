@@ -1,7 +1,7 @@
 #!/bin/bash
 # Universal Linux Updater Script
 # Made by @Godisser
-
+# This is version 2, The better version of Version 1 (of course) Added more features and shit like that, If you want to use the updateV1.bash you can do that, it's more simple than this :3
 set -e
 
 # Colors for output
