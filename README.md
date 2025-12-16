@@ -2,12 +2,12 @@
 Linux Bash script to simply update your system
 made on ubuntu
 
-IF YOU DO NOT HAVE FLATPAK, do "nano update.bash"
+IF YOU DO NOT HAVE FLATPAK, do "nano [thescript].bash" 
 and remove "flatpak update -y" on line "7"
 or install flatpak
 
 to run the script, use
-"bash update.bash"
+"bash [thescript].bash"
 if it give you an error of not finding the file,
 cd ~/Downloads 
 ^ - might work, depends on where you downloaded it on 
